@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Talent Acquisition Tool</title>
+
+<style>
+/* ================= THEME ================= */
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --sidebar1:#1e293b;
+  --sidebar2:#0f172a;
+  --accent:#0f172a;
+  --danger:#ef4444;
+  --shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --input-bg:#ffffff;
+  --input-border:#e2e8f0;
+  --search-mark-bg:#fde047;
+  --focus-bg:#eff6ff;
+  --focus-border:#3b82f6;
+  --focus-text:#1d4ed8;
+}
+
+body.dark{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --sidebar1:#020617;
+  --sidebar2:#0f172a;
+  --accent:#38bdf8;
+  --shadow:0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --input-bg:#334155;
+  --input-border:#475569;
+  --search-mark-bg:#854d0e;
+  --focus-bg:#1e3a8a44;
+  --focus-border:#3b82f6;
+  --focus-text:#93c5fd;
+}
+
+/* ================= BASE ================= */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  display:flex;
+  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s ease;
+  overflow:hidden;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+  width:260px;
+  background:linear-gradient(180deg,var(--sidebar1),var(--sidebar2));
+  color:#fff;
+  padding:20px;
+  overflow-y:auto;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+}
+.sidebar h2{
+  margin:0 0 24px;
+  font-size:1.2rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1.35;
+}
+.sidebar h3{
+  margin:25px 0 12px;
+  font-size:.75rem;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  opacity:.5;
+  font-weight:700;
+}
+.sidebar div{
+  padding:10px 14px;
+  border-radius:8px;
+  margin:2px 0;
+  cursor:pointer;
+  transition:.15s;
+  font-size:14px;
+  color:#cbd5e1;
+}
+.sidebar div:hover{background:rgba(255,255,255,.05);color:#fff;}
+.sidebar div.active{background:rgba(255,255,255,.1);color:#fff;font-weight:600;}
+
+/* ================= MAIN ================= */
+.main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;}
+.top{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-bottom:24px;
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:10;
+  padding-bottom:10px;
+}
+.modeSwitch{display:flex;gap:8px;align-items:center;}
+.modeBtn{
+  padding:8px 16px;
+  border-radius:8px;
+  border:1px solid var(--input-border);
+  cursor:pointer;
+  font-weight:600;
+  background:var(--input-bg);
+  color:var(--text);
+  transition:.2s;
+  font-size:14px;
+}
+.modeBtn.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+.themeToggle{
+  margin-left:auto;
+  font-size:18px;
+  cursor:pointer;
+  padding:8px;
+  border-radius:8px;
+  transition:.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.themeToggle:hover{background:rgba(0,0,0,.05);}
+body.dark .themeToggle:hover{background:rgba(255,255,255,.08);}
+
+/* ================= SEARCH ================= */
+.searchWrap{position:relative;}
+.search{
+  width:100%;
+  padding:12px 72px 12px 16px;
+  border-radius:10px;
+  border:1px solid var(--input-border);
+  background:var(--input-bg);
+  color:var(--text);
+  outline:none;
+  font-size:15px;
+  transition:.2s;
+}
+.search:focus{border-color:var(--focus-border);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.clearBtn{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:24px;
+  height:24px;
+  background:transparent;
+  border:none;
+  border-radius:6px;
+  color:var(--muted);
+  cursor:pointer;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.clearBtn:hover{color:var(--danger);}
+.kb-hint{
+  position:absolute;
+  right:45px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:11px;
+  background:rgba(0,0,0,.03);
+  padding:2px 5px;
+  border-radius:4px;
+  color:var(--muted);
+  pointer-events:none;
+}
+body.dark .kb-hint{background:rgba(255,255,255,.06);}
+
+/* ================= CARDS ================= */
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--input-border);
+  animation:fade .2s ease-out;
+}
+.title{font-weight:700;font-size:1rem;display:block;margin-bottom:12px;color:var(--text);}
+.text{white-space:pre-line;line-height:1.6;font-size:15px;color:var(--text);unicode-bidi:plaintext;}
+mark{background:var(--search-mark-bg);border-radius:2px;padding:0 1px;color:#111827;}
+body.dark mark{color:#fef3c7;}
+.slot{
+  background:rgba(0,0,0,.04);
+  border-radius:4px;
+  padding:0 4px;
+  font-weight:500;
+  transition:.15s;
+  color:var(--muted);
+  direction:ltr;
+  unicode-bidi:isolate;
+  display:inline-block;
+}
+body.dark .slot{background:rgba(255,255,255,.06);}
+.slot.active-focus{background:var(--focus-bg)!important;color:var(--focus-text)!important;box-shadow:0 0 0 1px var(--focus-border);}
+.slot.filled{background:transparent;color:var(--text);font-weight:600;}
+.vars-area{
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px solid var(--input-border);
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.var-input{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid var(--input-border);
+  font-size:13px;
+  outline:none;
+  transition:.2s;
+  background:var(--input-bg);
+  color:var(--text);
+  min-width:140px;
+}
+.var-input:focus{border-color:var(--focus-border);background:var(--focus-bg);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.copyBtn{
+  margin-top:20px;
+  padding:10px 24px;
+  border:none;
+  border-radius:8px;
+  background:var(--text);
+  color:var(--bg);
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+  font-size:14px;
+}
+.copyBtn:hover{opacity:.9;transform:translateY(-1px);}
+.copied{background:#10b981!important;color:#fff!important;}
+.empty-state{text-align:center;padding:40px;opacity:.55;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+@media (max-width:760px){
+  body{height:auto;min-height:100vh;display:block;overflow:auto;}
+  .sidebar{width:100%;max-height:45vh;}
+  .main{padding:16px;overflow:visible;}
+}
+</style>
+</head>
+
+<body>
+<div class="sidebar">
+  <h2>HR Talent Acquisition Tool</h2>
+  <h3>Navigation</h3>
+  <div id="sideRep" onclick="setMode('replies')">Replies</div>
+  <div id="sideMsg" onclick="setMode('messages')">Templates</div>
+  <hr style="width:100%; opacity:.1; margin:20px 0; border:none; border-top:1px solid #fff;">
+  <h3>Categories</h3>
+  <div id="cats"></div>
+</div>
+
+<div class="main">
+  <div class="top">
+    <div class="modeSwitch">
+      <button id="repBtn" class="modeBtn active" onclick="setMode('replies')">Replies</button>
+      <button id="msgBtn" class="modeBtn" onclick="setMode('messages')">Templates</button>
+      <div class="themeToggle" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌙</div>
+    </div>
+    <div class="searchWrap">
+      <input id="search" class="search" placeholder="Search..." oninput="render()" aria-label="Search replies and templates">
+      <span class="kb-hint">/</span>
+      <button class="clearBtn" onclick="clearSearch()" aria-label="Clear search">×</button>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const data = Object.freeze([
+  /* REPLIES — 8 CATEGORIES */
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Job Details Clarification",text:`نشكر اهتمامكم، ونرجو التكرم بمراجعة رابط الوظيفة المرفق للتعرف على التفاصيل بشكل أوضح، على أن يتم الرد على أي استفسارات أخرى أثناء المقابلة الشخصية.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Work Type (Onsite)",text:`نشكر اهتمامكم، نود الإفادة بأن الوظيفة الحالية بنظام العمل من مقر الشركة '(Onsite)'، وذلك كما هو موضح في الإعلان الوظيفي.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Dress Code Info",text:`نود الإفادة بأن الزي الرسمي غير مطلوب خلال مرحلة الاختبار.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Offer Details Timing",text:`نشكر اهتمامكم.
+نود الإفادة بأنه سيتم الرد على أي تفاصيل تتعلق بالعرض الوظيفي خلال المقابلة الشخصية.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Next Step After Passing",text:`نشكر تواصلكم،
+في حال اجتيازكم الاختبار بنجاح سيتم التواصل معكم لتحديد موعد المقابلة خلال الأسبوع القادم.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Work Location Clarification",text:`نشكر تواصلكم، نود الإفادة بأن مقر العمل من المركز التشغيلي بالقاهرة – مدينة نصر – أول مكرم عبيد، وليس بالمملكة العربية السعودية.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Assessment Format",text:`نود الإفادة بأن الاختبار يتضمن أسئلة اختيار من متعدد لتقييم ما يلي:
+
+> اللغة الإنجليزية
+> المعلومات العامة
+> مستوى الذكاء '(IQ)'
+> بالإضافة إلى اختبار كتابة باللغة الإنجليزية.`},
+  {main:"replies",category:"Candidate Inquiries – Assessment & Interview",title:"Assessment Purpose",text:`نود الإفادة بأن الاختبار يهدف إلى تقييم المعرفة والمهارات المرتبطة بالوظيفة، ويتضمن أسئلة متنوعة تتعلق بالمجال.
+
+نتمنى لكم التوفيق، وننتظر تأكيد حضوركم.`},
+
+  {main:"replies",category:"Withdrawal / Apology Responses",title:"Simple Apology",text:`شكرًا لإبلاغنا، مع تمنياتنا لكم بالتوفيق.`},
+  {main:"replies",category:"Withdrawal / Apology Responses",title:"Formal Apology Response",text:`نشكركم على رسالتكم وتوضيحكم، ونقدّر صراحتكم واهتمامكم.
+
+نتمنى لكم كل التوفيق والنجاح في خطواتكم المهنية القادمة.
+
+مع خالص التحية.`},
+
+  {main:"replies",category:"Rescheduling Requests",title:"New Assessment Slot",text:`نشكر اهتمامكم، ولا توجد مشكلة.
+
+نود الإفادة بأنه يتوفر لدينا موعد للاختبار يوم (الأحد) الموافق (15) (فبراير)، الساعة (الواحدة) (ظهراً).
+يرجى التكرم بتأكيد إمكانية الحضور أولًا، من أجل تثبيت الموعد.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Same Day Earlier Slot",text:`نشكر تواصلكم.
+نود الإفادة بأنه يتوفر لدينا موعد متاح في نفس اليوم الساعة (12:00) (ظهرًا).
+يرجى التكرم بتأكيد إمكانية الحضور أولًا، من أجل تثبيت الموعد.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Assessment Rescheduled",text:`نشكر تواصلكم وإبلاغنا بذلك.
+نود الإفادة بأنه تم إعادة جدولة موعد الاختبار ليوم غد في نفس الموعد، وذلك حسب طلبكم.
+
+يرجى التكرم بتأكيد الحضور.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Interview Rescheduled",text:`نشكر تواصلكم.
+نود الإفادة بأنه تم إعادة جدولة موعد المقابلة ليوم غد الساعة (الثالثة) (عصرًا) (3:00 PM)، وذلك حسب طلبكم.
+
+يرجى التكرم بتأكيد الحضور.`},
+  {main:"replies",category:"Rescheduling Requests",title:"No Available Slots",text:`نشكر تواصلكم واهتمامكم.
+
+نود الإفادة بأنه لا تتوافر مواعيد هذا الأسبوع، وفي حال توافر أي مواعيد خلال الأسبوع القادم، سيتم إبلاغكم.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Assessment Delay",text:`نشكر تواصلكم واهتمامكم،
+
+لا مشكلة، تم تأجيل الاختبار لمدة ساعة. في انتظار حضوركم.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Request Preferred Time",text:`نشكر تواصلكم.
+
+نرجو منكم إبلاغنا بالموعد المناسب لكم، حتى نتمكن من مراجعة إمكانية توفير موعد بديل في حال توافره.`},
+  {main:"replies",category:"Rescheduling Requests",title:"Rescheduling Unavailable",text:`نشكر تواصلكم واهتمامكم.
+
+نود الإفادة بأنه لا تتوفر حاليًا إمكانية لإعادة الجدولة، لكن في حال توافر أي مواعيد جديدة سيتم إبلاغكم.`},
+
+  {main:"replies",category:"CV Submissions via WhatsApp",title:"CV Received & Careers Page",text:`نشكر تواصلكم واهتمامكم بالانضمام لنا.
+نود الإفادة بأنه يمكنكم متابعة موقعنا الإلكتروني للاطلاع على الفرص الوظيفية المتاحة، حيث يتم الإعلان عن جميع الوظائف المناسبة بشكل مستمر:
+🔗 https://careers.directksa.com/ar
+
+نقدّر اهتمامكم ونتمنى لكم التوفيق.`},
+
+  {main:"replies",category:"Application Review Requests",title:"Application Under Review",text:`نشكر اهتمامكم بالتقديم على الوظيفة.
+
+سيتم مراجعة سجل التقديم الخاص بكم، والنظر في إمكانية المتابعة في الطلب الحالي.
+
+وسيتم التواصل معكم غدًا بإذن الله.`},
+  {main:"replies",category:"Application Review Requests",title:"Request Application Number",text:`نشكر تواصلكم. يرجى تزويدنا برقم طلب التقديم '(Application Number)' الخاص بكم لمتابعة الإجراءات بشكل رسمي.`},
+
+  {main:"replies",category:"No-Show Rejection",title:"No-Show Rejection",text:`نشكر اهتمامكم بالتقديم على وظيفة (Position).
+
+بعد مراجعة سجل التقديم الخاص بكم، تبيّن أنه تم تحديد موعد سابق للاختبار ولم يتم الحضور في الموعد المحدد دون اعتذار أو طلب إعادة جدولة. وبناءً على ذلك، نعتذر عن عدم إمكانية استكمال إجراءات التقديم أو المتابعة في الطلب الحالي.
+
+نتمنى لكم التوفيق في فرصكم المهنية القادمة.`},
+
+  {main:"replies",category:"Link Concerns",title:"Official Application Link",text:`نشكر تواصلكم.
+
+نود الإفادة بأن الرابط المرسل هو الرابط الرسمي للتقديم على الوظائف عبر موقع الشركة.
+
+في حال رغبتكم، يمكنكم الدخول مباشرة إلى موقعنا الرسمي '(Direct KSA)' والبحث عن الوظيفة والتقديم من خلاله.
+
+مع تمنياتنا لكم بالتوفيق.`},
+
+  {main:"replies",category:"Results / Feedback Inquiry",title:"Check Email for Results",text:`يرجى مراجعة البريد الإلكتروني الخاص بكم، حيث تم إرسال تحديث بخصوص المقابلة مسبقًا.
+
+نشكر تفهمكم.`},
+  {main:"replies",category:"Results / Feedback Inquiry",title:"Assessment Not Passed",text:`شكرًا لتواصلكم.
+
+نود الإفادة بأن سبب عدم الاستمرار في إجراءات التوظيف هو "عدم اجتياز اختبار التقييم".
+
+نشكر لكم اهتمامكم بالانضمام إلى فريقنا، ونتمنى لكم كل التوفيق والنجاح في مسيرتكم المهنية.`},
+  {main:"replies",category:"Results / Feedback Inquiry",title:"Other Candidates Selected",text:`مرحبا،
+
+نشكر اهتمامكم ووقتكم خلال المقابلة.
+
+بعد مراجعة التقييم، تم الاستقرار على استكمال العملية التوظيفية مع مرشحين آخرين كانوا الأقرب لمتطلبات الوظيفة الحالية.
+
+نتمنى لكم كل التوفيق في الفرص القادمة.`},
+  {main:"replies",category:"Results / Feedback Inquiry",title:"Assessment Result Under Review",text:`نشكر تواصلكم.
+
+نود الإفادة بأن نتائج اختبار التقييم لا تزال قيد المراجعة، وسيتم التواصل معكم فور الانتهاء من المراجعة وتحديث حالة الطلب.
+
+شكرًا لتفهمكم.`},
+
+  /* TEMPLATES — 10 CATEGORIES */
+  {main:"messages",category:"Assessment Invitation",title:"Assessment Email Notification",text:`مرحبًا،
+
+نود الإفادة بأنه تم إرسال بريد إلكتروني لكم بخصوص موعد اختبار التقييم الخاص بالوظيفة التي تقدمتم عليها لدى شركة دايركت.
+في حال وجود أي استفسار، يرجى تزويدنا برقم الطلب لمساعدتكم.
+
+تحياتنا،
+فريق التوظيف – دايركت`},
+  {main:"messages",category:"Assessment Invitation",title:"Assessment Invitation",text:`مرحبًا (Name)،
+
+نود إبلاغك بأنه تم تحديد موعد اختبار التقييم الخاص بوظيفة *(Position)،* رقم الطلب (Number) وذلك ضمن خطوات التقديم على الوظيفة.
+
+📌 *رابط الوظيفة:* (Link)
+
+🗓️ *موعد الاختبار:* يوم (الأحد) الموافق (18) (مارس)، الساعة (12:00 PM) بمقر الشركة.
+
+📍 *العنوان:* مدينة نصر - شارع حافظ رمضان، متفرع من مكرم عبيد عمارات دلتا فلاورز الجديدة - بجوار مطعم موسى للمأكولات البحرية وسيتي سنتر - برج 2 المصعد جهة اليسار - الدور العاشر - شقة 1002
+
+📌 *رابط الموقع على Google Maps:*
+https://maps.app.goo.gl/kupW5G5pztJtUBMNA
+
+*نرجو تأكيد حضورك بالرد على هذه الرسالة.*
+
+تحياتنا،
+فريق التوظيف – دايركت`},
+
+  {main:"messages",category:"Interview Invitation",title:"In-Person Interview Invitation",text:`تهانيناً،
+
+نود إبلاغك بأنك قد اجتزت بنجاح اختبار التقييم الخاص بوظيفة *(Position)،* ويسرّنا ترشيحك للانتقال إلى المرحلة التالية من عملية التوظيف، وهي المقابلة الشخصية.
+
+🗓️ *موعد المقابلة:* (الأحد)، الموافق (29) (مارس)، الساعة (12:00 PM) بمقر الشركة
+
+📍 *العنوان:* مدينة نصر - شارع حافظ رمضان، متفرع من مكرم عبيد عمارات دلتا فلاورز الجديدة - بجوار مطعم موسى للمأكولات البحرية وسيتي سنتر - برج 2 المصعد جهة اليسار - الدور العاشر - شقة 1002
+
+📌 *رابط الموقع على Google Maps:*
+https://maps.app.goo.gl/kupW5G5pztJtUBMNA
+
+👔 *الزي الرسمي المطلوب:* ملابس رسمية.
+
+*نرجو تأكيد حضورك بالرد على هذه الرسالة.*
+
+تحياتنا،
+فريق التوظيف – دايركت`},
+  {main:"messages",category:"Interview Invitation",title:"Online Interview Invitation",text:`مرحبا (Name)،
+
+يسرنا دعوتك لإجراء المقابلة الشخصية لوظيفة (Position)، وذلك ضمن مراحل التوظيف الخاصة بطلب التوظيف رقم (Number).
+
+ستُعقد المقابلة عن بُعد '(Online)' وفقًا للتفاصيل التالية:
+📅 *التاريخ:* (الأربعاء) (12) (أغسطس) (2026)
+🕛 *الوقت:* (3:30) (عصراً)
+⏳ *مدة المقابلة:* (30 دقيقة)
+🔗 *رابط الاجتماع:* (Link)
+
+سيحضر المقابلة:
+•	(الاسم) - (المسمى الوظيفي)
+•	(الاسم) - (المسمى الوظيفي)
+
+يرجى التكرم بالرد على هذه الرسالة لتأكيد ما يلي:
+1.	تأكيد حضورك للمقابلة في الموعد المحدد.
+2.	توفر كاميرا فعالة واتصال إنترنت مناسب، حيث يشترط تشغيل الكاميرا طوال مدة المقابلة.
+
+مع تمنياتنا لك بالتوفيق،
+فريق التوظيف – شركة دايركت`},
+
+  {main:"messages",category:"Ex-Employees Policy",title:"Ex-Employees Policy",text:`نشكرك على اهتمامك بالتقدم للوظيفة.
+نود الإفادة بأن سياسات الشركة الحالية لا تسمح بتعيين من سبق لهم العمل بالشركة، وعليه نعتذر عن عدم إمكانية استكمال إجراءات التوظيف في الوقت الحالي، مع تمنياتنا لك بالتوفيق.`},
+
+  {main:"messages",category:"Interview Acceptance",title:"Interview Acceptance",text:`يسرّنا أن نهنئك على اجتياز جميع مراحل التوظيف بنجاح 🎉
+
+يسعدنا إبلاغك بقبولك في وظيفة (Position) 🤝ونحن متحمسون لانضمامك إلى فريقنا 💼🧡
+
+سيتم التواصل معك لمتابعة إجراءات التعاقد وتفاصيل مباشرة العمل 📩
+
+نتمنى لك رحلة مهنية مليئة بالنجاح والتميّز معنا 🚀🌟`},
+
+  {main:"messages",category:"Future Pool",title:"Future Pool",text:`يسرّنا أن نهنئكم على اجتيازكم بنجاح جميع مراحل التقييم الخاصة بوظيفة *(Position)*.
+
+نفيدكم بأننا قد استوفينا احتياجاتنا الحالية للوظيفة، وعليه سيتم مباشرة التعيين مع المرشحين المحددين في هذه المرحلة.
+
+ومع ذلك، يسرّنا تأكيد إدراج اسمكم ضمن قائمة المرشحين الناجحين، وسيتم التواصل معكم فور توفر فرص إضافية مستقبلًا.
+
+راجين لكم دوام التوفيق والنجاح.`},
+
+  {main:"messages",category:"Interview Appointment Delay",title:"Interview Appointment Delay",text:`مرحبًا،
+
+نود إبلاغك بأنك قد اجتزت اختبار التقييم الخاص بوظيفة (Job Title)، وذلك ضمن خطوات التقديم على الوظيفة.
+
+سيتم التواصل معك (خلال الأسبوع القادم) لتحديد موعد المقابلة الشخصية.
+
+مع تمنياتنا لك بالتوفيق في الخطوات القادمة.
+
+تحياتنا،
+فريق التوظيف – دايركت`},
+
+  {main:"messages",category:"Techtic Onboarding Details",title:"Techtic Onboarding Details",text:`مرحباً 😊
+
+لقد أصبحت جزءًا من فريقنا المتميز، نحن متحمسون لرؤية تأثيرك الإيجابي فى دايركت.
+
+نود إبلاغكم بأنه قد تم الانتهاء من التدريب في الفرع الرئيسي، وسيتم الانتظام في العمل من مقر *تكتيك* (غداً - يوم) (الثلاثاء) (الساعة الثانية عشرة ظهراً 12:00 PM).
+
+سيكون في انتظاركم:
+(سيف إيهاب) (01154353414)
+
+📌 رابط الموقع على Google Maps:
+https://maps.google.com/maps?q=30.058673858642578%2C31.345569610595703&z=17&hl=en
+العنوان: ٣٤ شارع مكرم عبيد أعلي محل ڤيڤيان Vevian ومحل Ostrich للأثاث، الدور الخامس جهة اليمين`},
+
+  {main:"messages",category:"Techtic Night Shift Assessment Invitation",title:"Techtic Night Shift Assessment Invitation",text:`مرحبًا (Name)،
+
+نود إبلاغك بأنه تم تحديد موعد اختبار التقييم الخاص بوظيفة *(Position)*، رقم الطلب (Number) وذلك ضمن خطوات التقديم على الوظيفة.
+
+📌 رابط الوظيفة: (Link)
+
+🗓️ موعد الاختبار: يوم (الخميس) الموافق (6) (أغسطس) (2026)، الساعة (12:00 PM)، بمقر الشركة.
+
+⏰ برجاء العلم أن الوظيفة بنظام الشيفت المسائي من الساعة 4:00 عصراً حتى 12:00 منتصف الليل. يرجى التأكد من مناسبة مواعيد العمل قبل تأكيد الحضور للاختبار.
+
+📍 العنوان: مدينة نصر - شارع حافظ رمضان، متفرع من مكرم عبيد عمارات دلتا فلاورز الجديدة - بجوار مطعم موسى للمأكولات البحرية وسيتي سنتر - برج 2 المصعد جهة اليسار - الدور العاشر - شقة 1002
+
+📌 رابط الموقع على Google Maps: https://maps.app.goo.gl/kupW5G5pztJtUBMNA
+
+نرجو تأكيد حضورك بالرد على هذه الرسالة.
+
+تحياتنا،
+فريق التوظيف – دايركت`},
+
+  {main:"messages",category:"Bayt - Links to be sent",title:"Bayt Direct Application Link — Arabic",text:`مرحبًا (Name)،
+
+شكرًا لتقديمك على وظيفة *(Position)* عبر منصة *بيت '(Bayt)'.*
+
+لاستكمال طلبك، يرجى التقديم مباشرة من خلال الرابط التالي:
+
+👈 (Link)
+
+مع خالص الشكر،
+فريق التوظيف – شركة دايركت`},
+  {main:"messages",category:"Bayt - Links to be sent",title:"Bayt Direct Application Link — English",text:`Hi (Name),
+
+Thank you for applying for the *(Position)* position through *Bayt.* To proceed with your application, please complete the process by applying directly through the following link:
+👉(Link)
+
+Best regards,
+Direct – Recruitment Team`},
+
+  {main:"messages",category:"Bayt - Invitations to be sent",title:"Bayt Invitation — English",text:`Hi (Name),
+
+This is the Recruitment Team at Direct, one of the leading Saudi companies in travel, tourism, and study abroad. While reviewing profiles on *Bayt*, we found that your background appears to be a strong match for our *(Position)* position.
+
+Based on your experience, we believe you could be a great fit for this opportunity.
+
+🛎️ *Job Highlights:*
+* (Key Responsibilities)
+* (Key Responsibilities)
+* (Key Responsibilities)
+* (Key Responsibilities)
+* (Key Responsibilities)
+
+📍 If you're interested in exploring this opportunity, please submit your application through the following link:
+(Link)
+
+We look forward to receiving your application.
+
+Kind regards,
+Direct – Recruitment Team`}
+]);
+
+/* ================= STATE ================= */
+let mode = "replies";
+let selectedCat = "";
+
+/* ================= HELPERS ================= */
+function escapeHtml(value){
+  return String(value).replace(/[&<>"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[character]);
+}
+function escapeRegExp(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+function escapeAttribute(value){return escapeHtml(value).replace(/'/g,"&#39;");}
+
+function getVariables(text){
+  const matches = text.match(/(?<!')(\([^)]+\))(?!')/g);
+  return matches ? [...new Set(matches.map(match => match.slice(1,-1)))] : [];
+}
+
+function protectPlainBrackets(text){
+  return text.replace(/'\(([^)]*)\)'/g,"\uE000$1\uE001");
+}
+function restorePlainBrackets(text){
+  return text.replace(/\uE000(.*?)\uE001/g,"<bdi class=\"plain-bracket\" dir=\"ltr\">($1)</bdi>");
+}
+function highlightHtmlText(html, query){
+  if(!query) return html;
+  const matcher = new RegExp(`(${escapeRegExp(query)})`,"gi");
+  return html.split(/(<[^>]*>)/g).map(part => part.startsWith("<") ? part : part.replace(matcher,"<mark>$1</mark>")).join("");
+}
+function renderMessage(originalText, values = {}){
+  const vars = getVariables(originalText);
+  let output = escapeHtml(protectPlainBrackets(originalText));
+  vars.forEach(variable => {
+    const replacement = values[variable]
+      ? `<span class="slot filled" dir="ltr" data-var="${escapeAttribute(variable)}">${escapeHtml(values[variable])}</span>`
+      : `<span class="slot" dir="ltr" data-var="${escapeAttribute(variable)}">(${escapeHtml(variable)})</span>`;
+    output = output.replace(new RegExp(escapeRegExp(`(${variable})`),"g"),replacement);
+  });
+  return restorePlainBrackets(output);
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("hr-theme",document.body.classList.contains("dark") ? "dark" : "light");
+}
+if(localStorage.getItem("hr-theme") === "dark") document.body.classList.add("dark");
+
+function clearSearch(){document.getElementById("search").value="";render();}
+function setMode(nextMode){
+  mode = nextMode;
+  selectedCat = "";
+  document.getElementById("repBtn").classList.toggle("active",mode === "replies");
+  document.getElementById("msgBtn").classList.toggle("active",mode === "messages");
+  document.getElementById("sideRep").classList.toggle("active",mode === "replies");
+  document.getElementById("sideMsg").classList.toggle("active",mode === "messages");
+  loadCats();
+  render();
+}
+function setCategory(category){selectedCat = category;loadCats();render();}
+function loadCats(){
+  const categories = [...new Set(data.filter(item => item.main === mode).map(item => item.category))];
+  const allItem = `<div class="${selectedCat === "" ? "active" : ""}" onclick="setCategory('')">All</div>`;
+  const categoryItems = categories.map((category,index) => `<div class="${selectedCat === category ? "active" : ""}" data-category-index="${index}">${escapeHtml(category)}</div>`).join("");
+  const cats = document.getElementById("cats");
+  cats.innerHTML = allItem + categoryItems;
+  [...cats.querySelectorAll("[data-category-index]")].forEach(item => {
+    item.addEventListener("click",() => setCategory(categories[Number(item.dataset.categoryIndex)]));
+  });
+}
+
+/* ================= MAGIC FILL ================= */
+function focusSlot(dataIndex, variable, active){
+  const card = document.querySelector(`.card[data-index="${dataIndex}"]`);
+  if(!card) return;
+  card.querySelectorAll(".slot[data-var]").forEach(slot => {
+    if(slot.dataset.var === variable) slot.classList.toggle("active-focus",active);
+  });
+}
+function updatePreview(dataIndex,input){
+  const card = document.querySelector(`.card[data-index="${dataIndex}"]`);
+  if(!card) return;
+  const values = {};
+  card.querySelectorAll(".var-input").forEach(field => {values[field.dataset.var] = field.value;});
+  const query = document.getElementById("search").value.trim();
+  card.querySelector(".text").innerHTML = highlightHtmlText(renderMessage(data[dataIndex].text,values),query);
+  focusSlot(dataIndex,input.dataset.var,true);
+}
+
+/* ================= RENDER ================= */
+function render(){
+  const query = document.getElementById("search").value.trim();
+  let list = data.map((item,index) => ({...item,dataIndex:index})).filter(item => item.main === mode);
+  if(selectedCat) list = list.filter(item => item.category === selectedCat);
+  if(query){
+    const normalized = query.toLowerCase();
+    list = list.filter(item => item.title.toLowerCase().includes(normalized) || item.text.toLowerCase().includes(normalized) || item.category.toLowerCase().includes(normalized));
+  }
+  const content = document.getElementById("content");
+  content.innerHTML = list.length ? list.map(item => {
+    const variables = getVariables(item.text);
+    const title = highlightHtmlText(escapeHtml(item.title),query);
+    const text = highlightHtmlText(renderMessage(item.text),query);
+    const inputs = variables.length ? `<div class="vars-area">${variables.map(variable => `<input type="text" class="var-input" placeholder="${escapeAttribute(variable)}" data-var="${escapeAttribute(variable)}" onfocus="focusSlot(${item.dataIndex},this.dataset.var,true)" onblur="focusSlot(${item.dataIndex},this.dataset.var,false)" oninput="updatePreview(${item.dataIndex},this)">`).join("")}</div>` : "";
+    return `<div class="card" data-index="${item.dataIndex}"><span class="title">${title}</span><div class="text">${text}</div>${inputs}<button class="copyBtn" onclick="copy(this)">Copy to Clipboard</button></div>`;
+  }).join("") : `<div class="empty-state">No results found</div>`;
+}
+
+/* ================= COPY ================= */
+async function copy(button){
+  const text = button.parentElement.querySelector(".text").innerText;
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(error){
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+  const original = button.innerText;
+  button.innerText = "Copied ✓";
+  button.classList.add("copied");
+  setTimeout(() => {button.innerText = original;button.classList.remove("copied");},1500);
+}
+
+window.addEventListener("keydown",event => {
+  if(event.key === "/" && document.activeElement.tagName !== "INPUT"){
+    event.preventDefault();
+    document.getElementById("search").focus();
+  }
+});
+
+setMode("replies");
+</script>
+</body>
+</html>
